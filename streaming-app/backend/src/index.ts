@@ -11,10 +11,9 @@ import helmet from "helmet";
 import mediaRoutes from "./routes/media.routes";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
+import streamingRoutes from "./routes/streaming.routes";
 
 // Import des routes
-
-
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -107,6 +106,7 @@ app.get("/api/health/db", async (req, res) => {
 // Routes API
 app.use("/api/auth", authRoutes);
 app.use("/api/media", mediaRoutes);
+app.use("/api/streaming", streamingRoutes);
 
 // Route par défaut
 app.get("/", (req, res) => {
