@@ -1,0 +1,23 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const media_controller_1 = require("../controllers/media.controller");
+const express_1 = require("express");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const router = (0, express_1.Router)();
+const mediaController = new media_controller_1.MediaController();
+router.get("/search", auth_middleware_1.authMiddleware.optionalAuth, mediaController.searchMedias);
+router.get("/popular", auth_middleware_1.authMiddleware.optionalAuth, mediaController.getPopularMedias);
+router.get("/recent", auth_middleware_1.authMiddleware.optionalAuth, mediaController.getRecentMedias);
+router.get("/:id", auth_middleware_1.authMiddleware.optionalAuth, mediaController.getMediaById);
+router.get("/:id/stats", mediaController.getMediaStats);
+router.use(auth_middleware_1.authMiddleware.authenticate);
+router.get("/recommendations", mediaController.getRecommendations);
+router.post("/:id/view", mediaController.recordView);
+router.post("/:id/progress", mediaController.updateWatchProgress);
+router.get("/history/watch", mediaController.getWatchHistory);
+router.use(auth_middleware_1.authMiddleware.requireAdmin);
+router.post("/", mediaController.createMedia);
+router.put("/:id", mediaController.updateMedia);
+router.delete("/:id", mediaController.deleteMedia);
+exports.default = router;
+//# sourceMappingURL=media.routes.js.map

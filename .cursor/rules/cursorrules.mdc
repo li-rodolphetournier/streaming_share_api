@@ -1,0 +1,139 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Your rule content
+
+<context>
+You are an AI embed in a project that uses:
+
+# 🏥 Care Plan - Gestion Médicale Intelligente
+
+## 📋 À propos du projet
+
+**Care Plan** est une application web moderne conçue pour optimiser la gestion des rendez-vous et des utilisateurs dans un environnement hospitalier. Développée pour répondre aux besoins spécifiques des établissements de santé, cette solution permet une coordination fluide entre les agents d'accueil, secrétaires, professionnels de santé et administrateurs grâce à des fonctionnalités clés :
+
+- 👨⚕️ Gestion des plannings médicaux
+- 📅 Prise de rendez-vous intelligente
+- 🔐 Contrôle granulaire des accès utilisateurs
+- 📤 Notifications automatisées par email
+- 🗂 Archivage sécurisé des dossiers patients
+
+---
+
+## 🔥 Objectif pédagogique
+
+Ce projet est réalisé dans le cadre de la formation **CDA - Concepteur Développeur d'Applications** par une équipe de 5 étudiants.
+
+---
+
+## 👥 Rôles & Permissions
+
+| Rôle                          | Droits & Accès                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 🟢 **Agent**                  | - Accès mobile uniquement<br>- Recherche patient (nom / n° sécu)<br>- Affichage du lieu et horaire du rendez-vous                                                                                                                                                                                                                                                                                                                                      |
+| 🟡 **Secrétaire**             | - Gestion complète des rendez-vous (créer, modifier, supprimer)<br>- Accès à l'emploi du temps de tous les professionnels de santé<br>- Consultation des absences et congés du personnel médical<br>- Aucun accès aux dossiers médicaux<br>- Ne peut pas poser de congés ou indiquer une absence                                                                                                                                                       |
+| 🔵 **Professionnel de santé** | - Consultation et historique de ses rendez-vous<br>- Consultation de ses anciennes consultations<br>- Accès à tous les dossiers médicaux<br>- Rédaction obligatoire d'un compte rendu par consultation<br>- Ne peut pas modifier ni supprimer un compte rendu<br>- Peut rédiger un compte rendu correctif<br>- Peut consulter son propre planning<br>- Peut faire une demande de congé ou d'absence<br>- Ne peut pas voir le planning de ses collègues |
+| 🔴 **Admin**                  | - Création, modification, suppression d'utilisateurs<br>- Modification des rôles utilisateurs<br>- Accès au planning de tout le personnel (agents, secrétaires, professionnels de santé, admins)<br>- Peut modifier le planning de tout le personnel<br>- Aucun accès aux dossiers médicaux ni aux rendez-vous des patients                                                                                                                            |
+
+## 🔐 Modèle de permissions
+
+| Rôle       | Dossiers patients     | RDV | Congés / Absences                 | Planning              | Comptes utilisateurs |
+| ---------- | --------------------- | --- | --------------------------------- | --------------------- | -------------------- |
+| Agent      | ❌                    | ✅  | ❌                                | ❌                    | ❌                   |
+| Secrétaire | ❌                    | ✅  | Lecture seule congés/absences pro | Lecture planning pro  | ❌                   |
+| Médecin    | ✅ Lecture / Ajout CR | ✅  | ✅ (sur soi-même)                 | ✅ (perso uniquement) | ❌                   |
+| Admin      | ❌                    | ❌  | ✅ (tout personnel)               | ✅ (tout personnel)   | ✅ (CRUD + rôles)    |
+
+---
+
+## 🧱 Architecture technique
+
+L'application repose sur une architecture **microservices** pour une meilleure scalabilité et séparation des responsabilités. Chaque microservice communique via **GraphQL**.
+
+---
+
+## 🚀 Technologies utilisées
+
+### Frontend
+
+- ⚛️ **React** - Interfaces dynamiques
+- 🔷 **TypeScript** - Typage statique robuste
+- 🎨 **TailwindCSS v4** - Framework CSS utilitaire
+- 🧩 **Shadcn UI** - Composants UI accessibles
+- 🔍 **@headlessui/react** - Composants UI accessibles sans styles
+- 🔄 **GraphQL** - API flexible
+- 🔌 **TypeORM** - ORM TypeScript
+- 📅 **casl** - Gestion des permissions
+- 🖼️ **Framer Motion** - Animations fluides
+- 🔍 **Lucide React** - Icônes pour React
+- ✉️ **React Email** - Templates email responsive
+- 🧹 **eslint** - Linter de code
+- 🔷 **prettier** - Formattage de code
+- 🔍 **husky** - Pré-commit hook
+- 🧪 **playwright** - Tests UI
+
+### Backend
+
+- 🗄️ **PostgreSQL** - Base de données relationnelle
+- 📧 **Nodemailer** - Emails transactionnels
+- 🎨 **Redis** - Cache performant
+- 🔍 **Nginx** - Proxy inverse
+- 🐳 **Docker** - Conteneurisation
+- 📅 **Day.js** - Gestion des dates
+- 🔐 **JWT** - Authentification sécurisée
+- 🔑 *ashing sécurisé
+
+---
+
+
+</context>
+
+<style-and-structure>
+- Write concise, technical TypeScript code using functional and declarative programming patterns.
+- Avoid classes; prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
+- Structure files into: docker conteneurs, microservices, exported components, subcomponents, helpers, static content, and types.
+</style-and-structure>
+
+<naming-conventions>
+- Use lowercase with dashes for directories (e.g., `components/auth-wizard`).
+- Use of snake_case
+- Favor named exports for components.
+</naming-conventions>
+
+<typescript-usage>
+- Use TypeScript for all code; prefer types over interfaces.
+- Avoid enums; use maps instead.
+- Use functional components with TypeScript types.
+</typescript-usage>
+
+<syntax-and-formatting>
+- Avoid unnecessary curly braces in conditionals: use concise syntax.
+</syntax-and-formatting>
+
+- <database-querying-and-data-model-creation>
+- GraphQL - Langage de requête pour API flexible et efficace
+- SQLite - Système de gestion de base de données léger
+- TypeORM
+</database-querying-and-data-model-creation>
+
+<key-conventions>
+- Use 'nugs' for URL search parameter state management.
+- Optimize Web Vitals (LCP, CLS, FID).
+</key-conventions>
+
+<ui-and-styling>
+- Use Tailwind for components and styling.
+- Implement responsive design with Tailwind CSS using a mobile-first approach.
+</ui-and-styling>
+
+<performance-optimization>
+- Minimize `use client`, `useEffect`, and `setState`; favor React Server Components (RSC).
+- Wrap client components in `Suspense` with fallback.
+- Use dynamic loading for non-critical components.
+- Optimize images: use WebP format, include size data, and implement lazy loading.
+</performance-optimization>
+
+- ecrit toutes tes reponse en francais.

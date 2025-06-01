@@ -1,0 +1,77 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "vite": {
+      "url": "https://vitejs.dev/guide/"
+    },
+    "react-hook-form": {
+      "url": "https://react-hook-form.com/api"
+    },
+    "tailwindcss": {
+      "url": "https://github.com/tailwindlabs/tailwindcss.com"
+    },
+    "typescript": {
+      "url": "https://github.com/microsoft/TypeScript"
+    },
+    "powershell": {
+      "url": "https://github.com/microsoftdocs/powershell-docs"
+    },
+    "shadcn-ui": {
+      "url": "https://github.com/shadcn-ui/ui"
+    },
+    "lucide-react": {
+      "url": "https://lucide.dev/icons/"
+    },
+    "plex": {
+      "url": "https://plex.tv/en-us/support/article/plex-media-server-2-0-release-notes/"
+    },
+    "plex-api": {
+      "url": "https://github.com/pkkid/python-plexapi"
+    },
+    "apollo-server": {
+      "url": "https://github.com/apollographql/apollo-server"
+    },
+    "apollo-client": {
+      "url": "https://github.com/apollographql/apollo-client"
+    },
+    "apollo": {
+      "url": "https://github.com/apolloauto/apollo"
+    },
+    "GraphQL": {
+      "url": "https://github.com/graphql/graphql-spec"
+    },
+    "typeOrm": {
+      "url": "https://github.com/typeorm/typeorm"
+    },
+    "jwt-auth": {
+      "url": "https://github.com/tymondesigns/jwt-auth"
+    },
+    "PostgreSQL": {
+      "url": "https://github.com/postgres/postgres"
+    },
+    "Wcag": {
+      "url": "https://github.com/w3c/wcag"
+    },
+    "docker": {
+      "url": "https://github.com/docker/docs"
+    },
+    "codegen": {
+      "url": "https://github.com/codegen-sh/codegen"
+    },
+    "makefile": {
+      "url": "https://github.com/fluidattacks/makes"
+    },
+    "redis": {
+      "url": "https://github.com/redis/redis-doc"
+    },
+    "axios": {
+      "url": "https://github.com/axios/axios-docs"
+    },
+    "nginx": {
+      "url": "https://github.com/nginx/nginx"
+    }
+  }
+}

@@ -1,0 +1,213 @@
+version: "3.8"
+
+services:
+  # Base de données PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: streaming_postgres_dev
+    environment:
+      POSTGRES_DB: streaming_db
+      POSTGRES_USER: streaming_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-streaming_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U streaming_user -d streaming_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - streaming_network_dev
+
+  # Cache Redis
+  redis:
+    image: redis:7-alpine
+    container_name: streaming_redis_dev
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - redis_data_dev:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "--no-auth-warning",
+          "-a",
+          "${REDIS_PASSWORD:-redis_password}",
+          "ping",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - streaming_network_dev
+
+  # Backend API Express
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: streaming_backend_dev
+    environment:
+      NODE_ENV: development
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: streaming_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-streaming_password}
+      POSTGRES_DB: streaming_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_dev}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your_super_secret_refresh_key_dev}
+      MEDIA_PATH: /media
+      UPLOADS_PATH: /uploads
+      HLS_PATH: /tmp/hls
+      API_PORT: 3001
+      API_HOST: 0.0.0.0
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+      - ./backend/package-lock.json:/app/package-lock.json
+      - ./backend/tsconfig.json:/app/tsconfig.json
+      - ./backend/nodemon.json:/app/nodemon.json
+      - media_storage_dev:/media
+      - upload_storage_dev:/uploads
+      - hls_cache_dev:/tmp/hls
+      - backend_logs_dev:/app/logs
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - streaming_network_dev
+
+  # Apollo GraphQL Server
+  apollo:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: streaming_apollo_dev
+    environment:
+      NODE_ENV: development
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: streaming_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-streaming_password}
+      POSTGRES_DB: streaming_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_dev}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your_super_secret_refresh_key_dev}
+      APOLLO_PORT: 4000
+      APOLLO_HOST: 0.0.0.0
+      FRONTEND_URL: http://localhost:3000
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+      - ./backend/package-lock.json:/app/package-lock.json
+      - ./backend/tsconfig.json:/app/tsconfig.json
+      - ./backend/nodemon.json:/app/nodemon.json
+      - /app/node_modules
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    command: npm run dev:apollo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - streaming_network_dev
+
+  # Frontend (mode développement)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
+        VITE_GRAPHQL_URL: ${VITE_GRAPHQL_URL:-http://localhost:4000/graphql}
+        VITE_MOCK_API: ${VITE_MOCK_API:-false}
+    container_name: streaming_frontend_dev
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
+      VITE_GRAPHQL_URL: ${VITE_GRAPHQL_URL:-http://localhost:4000/graphql}
+      VITE_MOCK_API: ${VITE_MOCK_API:-false}
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/package-lock.json:/app/package-lock.json
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/tailwind.config.js:/app/tailwind.config.js
+      - ./frontend/postcss.config.js:/app/postcss.config.js
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - apollo
+    restart: unless-stopped
+    command: npm run dev -- --host 0.0.0.0
+    networks:
+      - streaming_network_dev
+
+volumes:
+  postgres_data_dev:
+    driver: local
+  redis_data_dev:
+    driver: local
+  media_storage_dev:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${MEDIA_PATH:-./media}
+  upload_storage_dev:
+    driver: local
+  hls_cache_dev:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: size=1G
+  backend_logs_dev:
+    driver: local
+
+networks:
+  streaming_network_dev:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
